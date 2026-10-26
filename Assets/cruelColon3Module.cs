@@ -110,7 +110,11 @@ public class cruelColon3Module : MonoBehaviour
 						currentPoints -= 200;
 						currentPointsText.text = currentPoints.ToString();
 					}
-					else {Audio.HandlePlaySoundAtTransform(warnSound.name, transform);}
+					else
+					{
+						Audio.HandlePlaySoundAtTransform(warnSound.name, transform);
+						print(getAnswer(currentPoints));
+					}
 					canInput = !canInput;
 					SetTimer(TwitchPlaysActive?900:500);
 				}
@@ -155,15 +159,16 @@ public class cruelColon3Module : MonoBehaviour
 	}
 
 	string getReversedAnswer(string str) => str.Any(c => "cC3".Contains(c)) ? "" : 
-		str.Reverse().Select(c => "><xX;:O({|["["<>xX;:O)}|]".IndexOf(c)].ToString()).Aggregate("", (a, b) => a + b);
+		str.ToCharArray().Reverse().Select(c => "><xX;:O({|["["<>xX;:O)}|]".IndexOf(c)].ToString()).Aggregate("", (a, b) => a + b);
 	
 	
 	void submit(string str)
 	{
 		canInput = false;
 		string ans = getAnswer(currentPoints);
-		string rev = getReversedAnswer(str);
+		string rev = getReversedAnswer(ans);
 		activationsText.text = "";
+		currentAnswer = "";
 		if (str != rev && str != ans)
 		{
 			Module.HandleStrike();
@@ -268,6 +273,8 @@ public class cruelColon3Module : MonoBehaviour
 	public IEnumerator ProcessTwitchCommand(string Command)
 	{
 		yield return null;
+		if (ModuleSolved) yield break;
+		// regex: ^(?:[<>]?(?:X|xX|;;?|::?)O?[)>}|\]3][Cc]?|[(\[{<|]O?(?:X|Xx|;;?|::?)[<>]?)$
 		submit(Command);
 	}
 
